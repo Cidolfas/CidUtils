@@ -9,6 +9,13 @@ public class StateMachine<T> {
 	
 	protected Dictionary<string, State<T>> mp_stateList = new Dictionary<string, State<T>>();
 	
+	public bool AddState(string name, State<T> state)
+	{
+		if (mp_stateList.ContainsKey(name)) return false;
+		mp_stateList.Add(name, state);
+		return true;
+	}
+	
 	public void Tick()
 	{
 		// If there is no state, return
