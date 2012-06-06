@@ -2,10 +2,10 @@ using UnityEngine;
 using System.Collections;
 
 [RequireComponent(typeof(CharacterController))]
-public class ChaseBot : MonoBehaviour {
+public class FSMChaseBot : MonoBehaviour {
 	
 	public Transform target;
-	public StateMachine<ChaseBot> sm = new StateMachine<ChaseBot>();
+	public StateMachine<FSMChaseBot> sm = new StateMachine<FSMChaseBot>();
 	public float chaseRadius = 2f;
 	public float runRadius = 15f;
 	public float speed = 10f;
@@ -35,9 +35,9 @@ public class ChaseBot : MonoBehaviour {
 		sm.ChangeState("Idle");
 	}
 	
-	protected class IdleState : State<ChaseBot> {
+	protected class IdleState : State<FSMChaseBot> {
 		
-		public IdleState(ChaseBot owner) : base(owner)
+		public IdleState(FSMChaseBot owner) : base(owner)
 		{
 			
 		}
@@ -65,9 +65,9 @@ public class ChaseBot : MonoBehaviour {
 		}
 	}
 	
-	protected class ChaseState : State<ChaseBot> {
+	protected class ChaseState : State<FSMChaseBot> {
 		
-		public ChaseState(ChaseBot owner) : base(owner)
+		public ChaseState(FSMChaseBot owner) : base(owner)
 		{
 			
 		}
@@ -96,9 +96,9 @@ public class ChaseBot : MonoBehaviour {
 		}
 	}
 	
-	protected class RunState : State<ChaseBot> {
+	protected class RunState : State<FSMChaseBot> {
 		
-		public RunState(ChaseBot owner) : base(owner)
+		public RunState(FSMChaseBot owner) : base(owner)
 		{
 			
 		}

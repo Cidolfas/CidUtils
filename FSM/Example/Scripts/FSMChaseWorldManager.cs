@@ -1,9 +1,9 @@
 using UnityEngine;
 using System.Collections;
 
-public class WorldManager : MonoBehaviour {
+public class FSMChaseWorldManager : MonoBehaviour {
 	
-	public static WorldManager current;
+	public static FSMChaseWorldManager current;
 	
 	// Use this for initialization
 	void Start () {

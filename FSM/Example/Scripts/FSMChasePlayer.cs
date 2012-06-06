@@ -2,9 +2,9 @@ using UnityEngine;
 using System.Collections;
 
 [RequireComponent(typeof(CharacterController))]
-public class PlayerBot : MonoBehaviour {
+public class FSMChasePlayer : MonoBehaviour {
 	
-	public StateMachine<PlayerBot> sm = new StateMachine<PlayerBot>();
+	public StateMachine<FSMChasePlayer> sm = new StateMachine<FSMChasePlayer>();
 	
 	public float normalSpeed = 10f;
 	public float hulkSpeed = 7f;
@@ -45,9 +45,9 @@ public class PlayerBot : MonoBehaviour {
 		sm.ChangeState("Normal");
 	}
 	
-	protected class NormalState : State<PlayerBot> {
+	protected class NormalState : State<FSMChasePlayer> {
 		
-		public NormalState(PlayerBot owner) : base(owner)
+		public NormalState(FSMChasePlayer owner) : base(owner)
 		{
 			
 		}
@@ -75,9 +75,9 @@ public class PlayerBot : MonoBehaviour {
 		}
 	}
 	
-	protected class HulkState : State<PlayerBot> {
+	protected class HulkState : State<FSMChasePlayer> {
 		
-		public HulkState(PlayerBot owner) : base(owner)
+		public HulkState(FSMChasePlayer owner) : base(owner)
 		{
 			
 		}
@@ -97,7 +97,7 @@ public class PlayerBot : MonoBehaviour {
 		public override void EnterState ()
 		{
 			Debug.Log("You won't like me when I'm angry...");
-			WorldManager.current.BroadcastMessage("PlayerEnterHulkMode");
+			FSMChaseWorldManager.current.BroadcastMessage("PlayerEnterHulkMode");
 			mp_owner.transform.localScale = new Vector3(1.4f, 1.4f, 1.4f);
 			mp_owner.transform.position = mp_owner.transform.position + new Vector3(0f, 0.2f, 0f);
 			mp_owner.renderer.material.color = mp_owner.hulkColor;
@@ -106,7 +106,7 @@ public class PlayerBot : MonoBehaviour {
 		public override void ExitState ()
 		{
 			Debug.Log("Whoops, thought about puppies.");
-			WorldManager.current.BroadcastMessage("PlayerExitHulkMode");
+			FSMChaseWorldManager.current.BroadcastMessage("PlayerExitHulkMode");
 			mp_owner.transform.localScale = new Vector3(1f, 1f, 1f);
 			mp_owner.renderer.material.color = mp_owner.normalColor;
 		}
