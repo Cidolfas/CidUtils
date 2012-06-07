@@ -25,6 +25,7 @@ public class FSMChaseBot : MonoBehaviour {
 		sm.Tick();
 	}
 	
+	// Ooh look, interrupts!
 	void PlayerEnterHulkMode()
 	{
 		sm.ChangeState("Run");
@@ -35,6 +36,7 @@ public class FSMChaseBot : MonoBehaviour {
 		sm.ChangeState("Idle");
 	}
 	
+	// Begin the states here
 	protected class IdleState : State<FSMChaseBot> {
 		
 		public IdleState(FSMChaseBot owner) : base(owner)
