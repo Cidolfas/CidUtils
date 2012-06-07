@@ -17,7 +17,8 @@ public class BTAction : BTNode {
 	
 	public override BTStatusCode Tick ()
 	{
-		return mp_action();
+		status = mp_action();
+		return status;
 	}
 	
 }

@@ -3,11 +3,11 @@ using System.Collections;
 
 /// <summary>
 /// The BT Condition node is a leaf node that executes the delegate function assigned to it
-/// and passes the return of that function to its parent.
+/// and returns success if the function returns true or failure if the function returns false.
 /// </summary>
 public class BTCondition : BTNode {
 	
-	public delegate BTStatusCode Condition();
+	public delegate bool Condition();
 	protected Condition mp_condition;
 	
 	public BTCondition(Condition cond)
@@ -17,7 +17,8 @@ public class BTCondition : BTNode {
 	
 	public override BTStatusCode Tick ()
 	{
-		return mp_condition();
+		status = (mp_condition()) ? BTStatusCode.Success : BTStatusCode.Failure;
+		return status;
 	}
 	
 }
