@@ -11,6 +11,7 @@ public class BTConcurrent : BTNode {
 	
 	public int failLimit;
 	
+	// A negative value or 0 will result in no fail limiting
 	public BTConcurrent(int fails = 1)
 	{
 		failLimit = fails;
@@ -27,7 +28,7 @@ public class BTConcurrent : BTNode {
 				return BTStatusCode.Error;
 			} else if (code == BTStatusCode.Failure) {
 				fails++;
-				if (fails >= failLimit)
+				if (failLimit > 0 && fails >= failLimit)
 					return BTStatusCode.Failure;
 			}
 			mp_lastChild++;
