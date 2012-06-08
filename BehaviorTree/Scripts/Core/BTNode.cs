@@ -11,7 +11,7 @@ public abstract class BTNode {
 	public BTStatusCode status = BTStatusCode.Ready;
 	
 	public List<BTNode> children = new List<BTNode>();
-	public void AddChild(BTNode child) { children.Add(child); }
+	public BTNode AddChild(BTNode child) { children.Add(child); return child; }
 	
 	public abstract BTStatusCode Tick();
 	

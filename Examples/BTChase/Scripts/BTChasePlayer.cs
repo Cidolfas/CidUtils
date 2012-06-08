@@ -25,45 +25,36 @@ public class BTChasePlayer : MonoBehaviour {
 	void Awake ()
 	{
 		// This is where we build the tree
-		BTPrioritySelector root = new BTPrioritySelector();
+		BTNode root = new BTPrioritySelector();
 		bt = new BehaviorTree(root);
 		
 			// Should we transform?
 			// Decorator to make sure this never wins the priority selection
-			BTDecAlwaysFail transformCheckDec = new BTDecAlwaysFail();
-			root.AddChild(transformCheckDec);
+			BTNode transformCheckDec = root.AddChild(new BTDecAlwaysFail());
 				// Do the actual check
-				BTAction transformCheckAction = new BTAction(delegate(){
-					if (state == PlayerState.Normal && Input.GetKeyDown(KeyCode.Space)) {
-						BecomeHulk();
-					}
-					return BTStatusCode.Success;
-				});
-				transformCheckDec.AddChild(transformCheckAction);
+				transformCheckDec.AddChild(new BTAction(delegate(){
+						if (state == PlayerState.Normal && Input.GetKeyDown(KeyCode.Space)) {
+							BecomeHulk();
+						}
+						return BTStatusCode.Success;
+					}));
 		
 			// Normal sequence
-			BTSequence normalSeq = new BTSequence();
-			root.AddChild(normalSeq);
+			BTNode normalSeq = root.AddChild(new BTSequence());
 				// Are we in Normal mode?
-				BTCondition inNormalModeCond = new BTCondition(delegate(){ return state == PlayerState.Normal; }); // Anonymous methods are great for this!
-				normalSeq.AddChild(inNormalModeCond);
+				normalSeq.AddChild(new BTCondition(delegate(){ return state == PlayerState.Normal; })); // Anonymous methods are great for this!
 				// Get input
-				BTAction getInputAction = new BTAction(GetInput);
-				normalSeq.AddChild(getInputAction);
+				normalSeq.AddChild(new BTAction(GetInput));
 				// Move player
-				BTAction moveNormalAction = new BTAction(NormalMove);
-				normalSeq.AddChild(moveNormalAction);
+				normalSeq.AddChild(new BTAction(NormalMove));
 			
 			// Hulk sequence
-			BTSequence hulkSeq = new BTSequence();
-			root.AddChild(hulkSeq);
+			BTNode hulkSeq = root.AddChild(new BTSequence());
 				// Assume we're in hulk mode if we're here
 				// Get input
-				BTAction hulkInputAction = new BTAction(GetInput); // New instance b/c each instance has it own status
-				hulkSeq.AddChild(hulkInputAction);
+				hulkSeq.AddChild(new BTAction(GetInput)); // New instance b/c each instance has it own status
 				// Move player
-				BTAction moveHulkAction = new BTAction(HulkMove);
-				hulkSeq.AddChild(moveHulkAction);
+				hulkSeq.AddChild(new BTAction(HulkMove));
 	}
 	
 	void Start()
