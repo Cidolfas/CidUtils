@@ -70,6 +70,11 @@ public abstract class NetworkingBase : MonoBehaviour {
 		PlayerPrefs.SetInt ("serverNAT", (m_serverUseNAT) ? 1 : 0);
 	}
 	
+	public void CloseServer ()
+	{
+		Network.Disconnect ();
+	}
+	
 	public void JoinServerByIP ()
 	{
 		if (m_playerName == "") {
@@ -83,5 +88,10 @@ public abstract class NetworkingBase : MonoBehaviour {
 		
 		PlayerPrefs.SetString ("joinServerIP", m_joinServerIP);
 		PlayerPrefs.SetInt ("joinServerPort", m_joinServerPort);
+	}
+	
+	public void QuitServer ()
+	{
+		Network.Disconnect ();
 	}
 }
