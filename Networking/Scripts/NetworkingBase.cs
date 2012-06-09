@@ -20,6 +20,7 @@ public abstract class NetworkingBase : MonoBehaviour {
 	protected bool m_serverUseNAT = false;
 	protected int m_serverPlayerLimit = 2;
 	protected string m_serverPassword = "";
+	protected bool m_serverDedicated = true;
 	
 	// Player information variables
 	protected string m_playerName = "Name";
@@ -43,13 +44,15 @@ public abstract class NetworkingBase : MonoBehaviour {
 			m_serverUseNAT = true;
 		if (PlayerPrefs.GetString ("serverPassword") != "")
 			m_serverPassword = PlayerPrefs.GetString ("serverPassword");
+		if (PlayerPrefs.GetInt ("serverDedicated") != 0)
+			m_serverDedicated = true;
 		
 		// Player
 		if (PlayerPrefs.GetString ("playerName") != "")
 			m_playerName = PlayerPrefs.GetString ("playerName");
 	}
 	
-	public void StartServer ()
+	public NetworkConnectionError StartServer ()
 	{
 		if (m_serverName == "") {
 			m_serverName = "Server";
@@ -62,12 +65,19 @@ public abstract class NetworkingBase : MonoBehaviour {
 			Network.incomingPassword = "";
 		}
 		
-		Network.InitializeServer (m_serverPlayerLimit, m_serverPort, m_serverUseNAT);
+		NetworkConnectionError error;
+		
+		// Make sure to account for the server player if we're not running a dedicated server!
+		int numConnections = (m_serverDedicated) ? m_serverPlayerLimit : m_serverPlayerLimit - 1;
+		error = Network.InitializeServer (numConnections, m_serverPort, m_serverUseNAT);
 		
 		PlayerPrefs.SetString ("serverName", m_serverName);
 		PlayerPrefs.SetInt ("serverPort", m_serverPort);
 		PlayerPrefs.SetInt ("serverLimit", m_serverPlayerLimit);
 		PlayerPrefs.SetInt ("serverNAT", (m_serverUseNAT) ? 1 : 0);
+		PlayerPrefs.SetInt ("serverDedicated", (m_serverDedicated) ? 1 : 0);
+		
+		return error;
 	}
 	
 	public void CloseServer ()
@@ -75,19 +85,23 @@ public abstract class NetworkingBase : MonoBehaviour {
 		Network.Disconnect ();
 	}
 	
-	public void JoinServerByIP ()
+	public NetworkConnectionError JoinServerByIP ()
 	{
 		if (m_playerName == "") {
 			m_playerName = "Player";
 		}
 		
+		NetworkConnectionError error;
+		
 		if (m_joinServerPassword != "")
-			Network.Connect (m_joinServerIP, m_joinServerPort, m_joinServerPassword);
+			error = Network.Connect (m_joinServerIP, m_joinServerPort, m_joinServerPassword);
 		else
-			Network.Connect (m_joinServerIP, m_joinServerPort);
+			error = Network.Connect (m_joinServerIP, m_joinServerPort);
 		
 		PlayerPrefs.SetString ("joinServerIP", m_joinServerIP);
 		PlayerPrefs.SetInt ("joinServerPort", m_joinServerPort);
+		
+		return error;
 	}
 	
 	public void QuitServer ()
