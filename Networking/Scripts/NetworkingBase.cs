@@ -11,11 +11,13 @@ public abstract class NetworkingBase : MonoBehaviour {
 	
 	// Server to join variables
 	protected string m_joinServerIP = "127.0.0.1";
+	protected string[] m_joinServerIPs = new string[0];
 	protected int m_joinServerPort = 27182;
 	protected string m_joinServerPassword = "";
 	
 	// Server to host variables
 	protected string m_serverName = "Default Server Name";
+	protected string m_serverComment = "";
 	protected int m_serverPort = 27182;
 	protected bool m_serverUseNAT = false;
 	protected int m_serverPlayerLimit = 2;
@@ -62,10 +64,9 @@ public abstract class NetworkingBase : MonoBehaviour {
 	
 	public void RequestServerList ()
 	{
-		if (CanUpdateSeverList()) {
+		if (CanUpdateSeverList ()) {
 			m_masterServerNextRefreshTime = Time.time + m_masterServerMaxRefreshRate;
-			Debug.Log ("Asking for refresh");
-			StartCoroutine(GetAndWriteServerList());
+			MasterServer.RequestHostList (m_masterServerGameName);
 		}
 	}
 	
@@ -76,8 +77,6 @@ public abstract class NetworkingBase : MonoBehaviour {
 	
 	private IEnumerator GetAndWriteServerList ()
 	{
-		MasterServer.ClearHostList ();
-		
 		float startTime = Time.time;
 		
 		while (MasterServer.PollHostList().Length == 0) {
@@ -86,13 +85,30 @@ public abstract class NetworkingBase : MonoBehaviour {
 			yield return null;
 		}
 		m_masterServerList = MasterServer.PollHostList ();
-		Debug.Log ("Refresh received, listing " + m_masterServerList.Length + " servers");
-		MasterServer.ClearHostList ();
+		
 	}
 	
 	void OnFailedToConnectToMasterServer (NetworkConnectionError info)
 	{
 		Debug.Log ("Could not connect to master server: " + info);
+	}
+	
+	void OnServerInitialized ()
+	{
+		
+	}
+
+	void OnMasterServerEvent (MasterServerEvent msEvent)
+	{
+		switch (msEvent) {
+		case MasterServerEvent.HostListReceived:
+			m_masterServerList = MasterServer.PollHostList ();
+			break;
+			
+		default:
+			Debug.Log (msEvent);
+			break;
+		}
 	}
 	
 	public NetworkConnectionError StartServer ()
@@ -110,14 +126,14 @@ public abstract class NetworkingBase : MonoBehaviour {
 		
 		NetworkConnectionError error;
 		
-		m_serverUseNAT = !Network.HavePublicAddress();
+		m_serverUseNAT = !Network.HavePublicAddress ();
 		
 		// Make sure to account for the server player if we're not running a dedicated server!
 		int numConnections = (m_serverDedicated) ? m_serverPlayerLimit : m_serverPlayerLimit - 1;
 		error = Network.InitializeServer (numConnections, m_serverPort, m_serverUseNAT);
 		
-		if (error == NetworkConnectionError.NoError && m_usesMasterServer) {
-			MasterServer.RegisterHost (m_masterServerGameName, m_serverName);
+		if (m_usesMasterServer) {
+			MasterServer.RegisterHost (m_masterServerGameName, m_serverName, m_serverComment);
 		}
 		
 		PlayerPrefs.SetString ("serverName", m_serverName);
@@ -150,6 +166,22 @@ public abstract class NetworkingBase : MonoBehaviour {
 		
 		PlayerPrefs.SetString ("joinServerIP", m_joinServerIP);
 		PlayerPrefs.SetInt ("joinServerPort", m_joinServerPort);
+		
+		return error;
+	}
+	
+	public NetworkConnectionError JoinServerByIPs ()
+	{
+		if (m_playerName == "") {
+			m_playerName = "Player";
+		}
+		
+		NetworkConnectionError error;
+		
+		if (m_joinServerPassword != "")
+			error = Network.Connect (m_joinServerIPs, m_joinServerPort, m_joinServerPassword);
+		else
+			error = Network.Connect (m_joinServerIPs, m_joinServerPort);
 		
 		return error;
 	}
