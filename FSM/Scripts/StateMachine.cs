@@ -9,10 +9,15 @@ public class StateMachine<T> {
 	
 	protected Dictionary<string, State<T>> mp_stateList = new Dictionary<string, State<T>>();
 	
-	public bool AddState(string name, State<T> state)
+	public bool AddState (string name, State<T> state)
 	{
-		if (mp_stateList.ContainsKey(name)) return false;
-		mp_stateList.Add(name, state);
+		if (mp_stateList.ContainsKey (name)) {
+			Debug.Log ("Overriding state " + name);
+			mp_stateList [name] = state;
+			return false;
+		} else {
+			mp_stateList.Add (name, state);
+		}
 		return true;
 	}
 	
