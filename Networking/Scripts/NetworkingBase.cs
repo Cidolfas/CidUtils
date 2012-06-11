@@ -42,6 +42,8 @@ public abstract class NetworkingBase : MonoBehaviour {
 			m_joinServerIP = PlayerPrefs.GetString ("joinServerIP");
 		if (PlayerPrefs.GetInt ("joinServerPort") != 0)
 			m_joinServerPort = PlayerPrefs.GetInt ("joinServerPort");
+		if (PlayerPrefs.GetString ("joinServerPassword") != "")
+			m_joinServerPassword = PlayerPrefs.GetString ("joinServerPassword");
 		
 		// Host
 		if (PlayerPrefs.GetString ("serverName") != "")
@@ -119,7 +121,6 @@ public abstract class NetworkingBase : MonoBehaviour {
 		
 		if (m_serverPassword != "") {
 			Network.incomingPassword = m_serverPassword;
-			PlayerPrefs.SetString ("serverPassword", m_serverPassword);
 		} else {
 			Network.incomingPassword = "";
 		}
@@ -141,6 +142,7 @@ public abstract class NetworkingBase : MonoBehaviour {
 		PlayerPrefs.SetInt ("serverLimit", m_serverPlayerLimit);
 		PlayerPrefs.SetInt ("serverNAT", (m_serverUseNAT) ? 1 : 0);
 		PlayerPrefs.SetInt ("serverDedicated", (m_serverDedicated) ? 1 : 0);
+		PlayerPrefs.SetString ("serverPassword", m_serverPassword);
 		
 		return error;
 	}
@@ -166,6 +168,7 @@ public abstract class NetworkingBase : MonoBehaviour {
 		
 		PlayerPrefs.SetString ("joinServerIP", m_joinServerIP);
 		PlayerPrefs.SetInt ("joinServerPort", m_joinServerPort);
+		PlayerPrefs.SetString ("joinServerPassword", m_joinServerPassword);
 		
 		return error;
 	}
